@@ -1,21 +1,22 @@
 import streamlit as st
 import pandas as pd
-from recm import recommend, df  # importing function + dataframe
+from recom import recommend, df  # importing function + dataframe
 
-st.set_page_config(page_title=" AutoMatch", page_icon="🚗", layout="wide")
+st.set_page_config(page_title="🚗 AutoMatch", page_icon="🚗", layout="wide")
 st.title("🚗 AutoMatch – Find Your Perfect Car")
 
 # Car selection
 car_list = df["CarName"].tolist()
-selected_car = st.selectbox("🔍 Search for a car", car_list)
+selected_car = st.selectbox("🔍 Search for a car", ["-- Select a Car --"] + car_list)
 
-if selected_car:
+if selected_car != "-- Select a Car --":
+    # Spacing
+    st.markdown("<br>", unsafe_allow_html=True)
+
     # Show selected car details
     car_details = df[df["CarName"] == selected_car].iloc[0]
 
     st.subheader(f"📌 Details of {selected_car}")
-
-    # Create 5 columns for details
     col1, col2, col3, col4, col5 = st.columns(5)
 
     col1.metric("Price", f"₹ {car_details['Price (₹ Lakh)']:.2f} Lakh")
@@ -24,9 +25,12 @@ if selected_car:
     col4.metric("Torque", f"{car_details['Torque_Nm']:.0f} Nm")
     col5.metric("0–100 km/h", f"{car_details['ZeroTo100']:.1f} s")
 
-    # Get recommendations
+    # Spacing
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Get recommendations (only 4 cars)
     st.subheader("🤝 Recommended Cars for You")
-    recommendations = recommend(selected_car, top_n=5)
+    recommendations = recommend(selected_car, top_n=4)
 
     if recommendations.empty:
         st.warning("No recommendations found within the price range.")
@@ -43,4 +47,3 @@ if selected_car:
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
-
