@@ -46,7 +46,7 @@ if selected_car:
                 st.markdown(f"### {row['Make']} {row['Model']}")
                 st.write(
                     f"""
-                    • Price: ₹ {row['Price_USD']*83/100000:.2f} Lakh 
+                    • Price: ₹ {row['Price_USD']*87/100000:.2f} Lakh 
                     • Engine: {row['Engine_L']*1000:.0f} cc  
                     • Power: {row['Horsepower']} HP  
                     • Torque: {row['Torque_lbft']*1.35582:.0f} Nm  
@@ -55,4 +55,5 @@ if selected_car:
                 )
     else:
         st.info("No similar cars found.")
+
 
