@@ -1,62 +1,45 @@
-# app.py
 import streamlit as st
 import pandas as pd
-from recm import recommend
+from recm import recommend, df  # importing function + dataframe
 
-# Helper function to format price in Lakh / Crore
-def format_price(price_lakh: float) -> str:
-    if price_lakh >= 100:
-        return f"₹ {price_lakh/100:.2f} Crore"
-    else:
-        return f"₹ {price_lakh:.2f} Lakh"
-
-# Load dataset
-df = pd.read_csv("cars_cleaned.csv")
-
-# Convert units
-df["Price (₹ Lakh)"] = (df["Price_USD"] * 87) / 100000
-df["Engine (cc)"] = df["Engine_L"] * 1000
-df["Torque (Nm)"] = df["Torque_lbft"] * 1.35582
-df["0-100 km/h (s)"] = df["ZeroTo60"] * 1.60934 / 0.44704
-df["CarName"] = df["Make"] + " " + df["Model"]
-
-# Streamlit UI setup
-st.set_page_config(page_title="AutoMatch", layout="wide")
+st.set_page_config(page_title="🚗 AutoMatch", page_icon="🚗", layout="wide")
 st.title("🚗 AutoMatch – Find Your Perfect Car")
 
 # Car selection
-car_list = df["CarName"].unique()
-selected_car = st.selectbox("🔍 Search for a car", [""] + sorted(car_list))
+car_list = df["CarName"].tolist()
+selected_car = st.selectbox("🔍 Search for a car", car_list)
 
 if selected_car:
-    car_data = df[df["CarName"] == selected_car].iloc[0]
+    # Show selected car details
+    car_details = df[df["CarName"] == selected_car].iloc[0]
 
     st.subheader(f"📌 Details of {selected_car}")
-    st.write(
-        f"""
-        • Price: {format_price(car_data['Price (₹ Lakh)'])}\n
-        • Engine: {car_data['Engine (cc)']:.0f} cc\n
-        • Power: {car_data['Horsepower']} HP\n
-        • Torque: {car_data['Torque (Nm)']:.0f} Nm\n
-        • 0–100 km/h: {car_data['0-100 km/h (s)']:.1f} sec\n
-        """
-    )
 
+    # Create 5 columns for details
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    col1.metric("Price", f"₹ {car_details['Price (₹ Lakh)']:.2f} Lakh")
+    col2.metric("Engine", f"{car_details['Engine_L']*1000:.0f} cc")
+    col3.metric("Power", f"{car_details['Horsepower']:.1f} HP")
+    col4.metric("Torque", f"{car_details['Torque_Nm']:.0f} Nm")
+    col5.metric("0–100 km/h", f"{car_details['ZeroTo100']:.1f} s")
+
+    # Get recommendations
     st.subheader("🤝 Recommended Cars for You")
-    recs = recommend(selected_car, top_n=4)
+    recommendations = recommend(selected_car, top_n=5)
 
-    if not recs.empty:
-        cols = st.columns(len(recs))
-        for col, (_, row) in zip(cols, recs.iterrows()):
-            with col:
-                st.markdown(f"### {row['Make']} {row['Model']}")
-                st.write(
+    if recommendations.empty:
+        st.warning("No recommendations found within the price range.")
+    else:
+        cols = st.columns(2)
+        for idx, row in recommendations.iterrows():
+            with cols[idx % 2]:
+                st.markdown(
                     f"""
-                    • Price: {format_price(row['Price_USD']*87/100000)}\n
-                    • Engine: {row['Engine_L']*1000:.0f} cc\n
-                    • Power: {row['Horsepower']} HP\n
-                    • Torque: {row['Torque_lbft']*1.35582:.0f} Nm\n
+                    ### {row['CarName']}
+                    • **Price:** ₹ {row['Price (₹ Lakh)']:.2f} Lakh  
+                    • **Engine:** {row['Engine_L']*1000:.0f} cc  
+                    • **Power:** {row['Horsepower']:.1f} HP  
+                    • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
-    else:
-        st.info("No similar cars found.")
