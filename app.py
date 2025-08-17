@@ -28,7 +28,7 @@ if selected_car != "-- Select a Car --":
         unsafe_allow_html=True,
     )
          
-     st.markdown("<br>", unsafe_allow_html=True)
+     <br>
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -63,3 +63,4 @@ if selected_car != "-- Select a Car --":
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
+
