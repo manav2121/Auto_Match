@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from recom import recommend, df  # importing function + dataframe
+from recm import recommend, df  # importing function + dataframe
 
 st.set_page_config(page_title="🚗 AutoMatch", page_icon="🚗", layout="wide")
 st.title("🚗 AutoMatch – Find Your Perfect Car")
@@ -47,3 +47,4 @@ if selected_car != "-- Select a Car --":
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
+
