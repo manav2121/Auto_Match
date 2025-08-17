@@ -47,6 +47,9 @@ if selected_car != "-- Select a Car --":
         "<h3 style='text-align: center;'>🤝 Recommended Cars for You</h3>",
         unsafe_allow_html=True,
     )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    
     recommendations = recommend(selected_car, top_n=4)
 
     if recommendations.empty:
@@ -64,3 +67,4 @@ if selected_car != "-- Select a Car --":
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
+
