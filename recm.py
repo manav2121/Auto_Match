@@ -11,7 +11,7 @@ df = pd.read_csv("cars_cleaned.csv")
 df["CarName"] = df["Make"] + " " + df["Model"]
 
 # Convert units for consistency
-df["Price (₹ Lakh)"] = (df["Price_USD"] * 83) / 100000
+df["Price (₹ Lakh)"] = (df["Price_USD"] * 87) / 100000
 df["Torque_Nm"] = df["Torque_lbft"] * 1.35582
 df["ZeroTo100"] = df["ZeroTo60"] * 1.60934 / 0.44704
 
@@ -85,3 +85,4 @@ def recommend(car_name, top_n=5, price_tolerance=0.20):
             break
 
     return df.iloc[unique_indices].reset_index(drop=True)
+
