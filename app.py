@@ -3,13 +3,15 @@ import pandas as pd
 from recm import recommend, df  # importing function + dataframe
 
 st.set_page_config(page_title="🚗 AutoMatch", layout="wide")
-st.title("🚗 AutoMatch – Find Your Perfect Car")
-
+st.markdown(
+    "<h1 style='text-align: center;'>🚗 AutoMatch – Find Your Perfect Car</h1>",
+    unsafe_allow_html=True,
+)
 # Car selection
 car_list = df["CarName"].tolist()
-selected_car = st.selectbox("🔍 Search for a car", ["-- Select a Car --"] + car_list)
+selected_car = st.selectbox( [" 🔍 Search for a car "] + car_list)
 
-if selected_car != "-- Select a Car --":
+
     # Spacing
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -29,7 +31,10 @@ if selected_car != "-- Select a Car --":
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Get recommendations (only 4 cars)
-    st.subheader("🤝 Recommended Cars for You")
+    st.markdown(
+            "<h3 style='text-align: center;'>🤝 Recommended Cars for You</h3>",
+            unsafe_allow_html=True,
+        )
     recommendations = recommend(selected_car, top_n=4)
 
     if recommendations.empty:
@@ -47,3 +52,4 @@ if selected_car != "-- Select a Car --":
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
+
