@@ -24,11 +24,12 @@ if selected_car != "-- Select a Car --":
     car_details = df[df["CarName"] == selected_car].iloc[0]
 
     st.markdown(
-        "<h3 style='text-align: center;'>📌 Details of {selected_car}</h3>",
+        f"<h3 style='text-align: center;'>📌 Details of {selected_car}</h3>",
         unsafe_allow_html=True,
     )
-         
-     st.markdown("<br>", unsafe_allow_html=True)
+
+    # 👇 Add spacing after the title
+    st.markdown("<br>", unsafe_allow_html=True)
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -63,5 +64,3 @@ if selected_car != "-- Select a Car --":
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
-
-
