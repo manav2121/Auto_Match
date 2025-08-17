@@ -3,6 +3,13 @@ import streamlit as st
 import pandas as pd
 from recm import recommend
 
+# Helper function to format price in Lakh / Crore
+def format_price(price_lakh: float) -> str:
+    if price_lakh >= 100:
+        return f"₹ {price_lakh/100:.2f} Crore"
+    else:
+        return f"₹ {price_lakh:.2f} Lakh"
+
 # Load dataset
 df = pd.read_csv("cars_cleaned.csv")
 
@@ -27,12 +34,11 @@ if selected_car:
     st.subheader(f"📌 Details of {selected_car}")
     st.write(
         f"""
-        • Price: ₹ {car_data['Price (₹ Lakh)']:.2f} Lakh
-        • Engine: {car_data['Engine (cc)']:.0f} cc  
-        • Power: {car_data['Horsepower']} HP  
-        • Torque: {car_data['Torque (Nm)']:.0f} Nm  
-        • 0–100 km/h: {car_data['0-100 km/h (s)']:.1f} sec  
-       
+        • Price: {format_price(car_data['Price (₹ Lakh)'])}\n
+        • Engine: {car_data['Engine (cc)']:.0f} cc\n
+        • Power: {car_data['Horsepower']} HP\n
+        • Torque: {car_data['Torque (Nm)']:.0f} Nm\n
+        • 0–100 km/h: {car_data['0-100 km/h (s)']:.1f} sec\n
         """
     )
 
@@ -46,14 +52,11 @@ if selected_car:
                 st.markdown(f"### {row['Make']} {row['Model']}")
                 st.write(
                     f"""
-                    • Price: ₹ {row['Price_USD']*87/100000:.2f} Lakh 
-                    • Engine: {row['Engine_L']*1000:.0f} cc  
-                    • Power: {row['Horsepower']} HP  
-                    • Torque: {row['Torque_lbft']*1.35582:.0f} Nm  
-                    
+                    • Price: {format_price(row['Price_USD']*87/100000)}\n
+                    • Engine: {row['Engine_L']*1000:.0f} cc\n
+                    • Power: {row['Horsepower']} HP\n
+                    • Torque: {row['Torque_lbft']*1.35582:.0f} Nm\n
                     """
                 )
     else:
         st.info("No similar cars found.")
-
-
