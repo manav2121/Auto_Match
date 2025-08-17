@@ -9,8 +9,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Dropdown search bar
-car_name = st.selectbox("🔍 Search for a car", df["CarName"].unique())
+# Search bar
+car_name = st.text_input("🔍 Search for a car", "").strip()
 
 if car_name:
     results = recommend(car_name, top_n=4)  # exactly 4 cars
