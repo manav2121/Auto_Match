@@ -1,51 +1,57 @@
 import streamlit as st
-import pandas as pd
-from recm import recommend, df  # importing function + dataframe
+from recm import recommend, df  # fixed import
 
-st.set_page_config(page_title="🚗 AutoMatch", layout="wide")
-st.title("🚗 AutoMatch – Find Your Perfect Car")
+st.set_page_config(page_title="AutoMatch – Find Your Perfect Car", layout="wide")
 
-# Car selection
-car_list = df["CarName"].tolist()
-selected_car = st.selectbox("🔍 Search for a car", ["-- Select a Car --"] + car_list)
+# App title (centered)
+st.markdown(
+    "<h1 style='text-align: center;'>🚗 AutoMatch – Find Your Perfect Car</h1>",
+    unsafe_allow_html=True,
+)
 
-if selected_car != "-- Select a Car --":
-    # Spacing
-    st.markdown("<br>", unsafe_allow_html=True)
+# Search bar
+car_name = st.text_input("🔍 Search for a car", "").strip()
 
-    # Show selected car details
-    car_details = df[df["CarName"] == selected_car].iloc[0]
+if car_name:
+    results = recommend(car_name, top_n=4)  # exactly 4 cars
+    if not results.empty:
+        selected_car = df[df["CarName"] == car_name].iloc[0]
 
-    st.subheader(f"📌 Details of {selected_car}")
-    col1, col2, col3, col4, col5 = st.columns(5)
+        # Car details header (centered)
+        st.markdown(
+            f"<h3 style='text-align: center;'>📌 Details of {car_name}</h3>",
+            unsafe_allow_html=True,
+        )
 
-    col1.metric("Price", f"₹ {car_details['Price (₹ Lakh)']:.2f} Lakh")
-    col2.metric("Engine", f"{car_details['Engine_L']*1000:.0f} cc")
-    col3.metric("Power", f"{car_details['Horsepower']:.1f} HP")
-    col4.metric("Torque", f"{car_details['Torque_Nm']:.0f} Nm")
-    col5.metric("0–100 km/h", f"{car_details['ZeroTo100']:.1f} s")
+        # Car details in one line
+        st.markdown(
+            f"<p style='text-align: center;'>"
+            f"• Price: ₹ {selected_car['Price (₹ Lakh)']:.2f} Lakh "
+            f"• Engine: {int(selected_car['Engine_L']*1000)} cc "
+            f"• Power: {selected_car['Horsepower']:.1f} HP "
+            f"• Torque: {int(selected_car['Torque_Nm'])} Nm "
+            f"• 0–100 km/h: {selected_car['ZeroTo100']:.1f} sec"
+            f"</p>",
+            unsafe_allow_html=True,
+        )
 
-    # Spacing
-    st.markdown("<br>", unsafe_allow_html=True)
+        # Recommendations header (centered)
+        st.markdown(
+            "<h3 style='text-align: center;'>🤝 Recommended Cars for You</h3>",
+            unsafe_allow_html=True,
+        )
 
-    # Get recommendations (only 4 cars)
-    st.subheader("🤝 Recommended Cars for You")
-    recommendations = recommend(selected_car, top_n=4)
-
-    if recommendations.empty:
-        st.warning("No recommendations found within the price range.")
+        # Show recommendations
+        for _, row in results.iterrows():
+            st.markdown(
+                f"<p style='text-align: center;'>"
+                f"<b>{row['CarName']}</b><br>"
+                f"• Price: ₹ {row['Price (₹ Lakh)']:.2f} Lakh "
+                f"• Engine: {int(row['Engine_L']*1000)} cc "
+                f"• Power: {row['Horsepower']:.1f} HP "
+                f"• Torque: {int(row['Torque_Nm'])} Nm"
+                f"</p><br>",
+                unsafe_allow_html=True,
+            )
     else:
-        cols = st.columns(2)
-        for idx, row in recommendations.iterrows():
-            with cols[idx % 2]:
-                st.markdown(
-                    f"""
-                    ### {row['CarName']}
-                    • **Price:** ₹ {row['Price (₹ Lakh)']:.2f} Lakh  
-                    • **Engine:** {row['Engine_L']*1000:.0f} cc  
-                    • **Power:** {row['Horsepower']:.1f} HP  
-                    • **Torque:** {row['Torque_Nm']:.0f} Nm  
-                    """
-                )
-
-
+        st.warning("No recommendations found for this car.")
