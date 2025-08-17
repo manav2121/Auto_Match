@@ -4,6 +4,14 @@ from recm import recommend, df  # importing function + dataframe
 
 st.set_page_config(page_title="🚗 AutoMatch", layout="wide")
 
+# --- Helper function for price formatting ---
+def format_price(lakh_value):
+    if lakh_value >= 100:  # 100 Lakh = 1 Crore
+        crore_value = lakh_value / 100
+        return f"₹ {crore_value:.2f} Cr"
+    else:
+        return f"₹ {lakh_value:.2f} Lakh"
+
 # App title
 st.markdown(
     "<h1 style='text-align: center;'>🚗 AutoMatch – Find Your Perfect Car</h1>",
@@ -33,7 +41,7 @@ if selected_car != "-- Select a Car --":
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
-    col1.metric("Price", f"₹ {car_details['Price (₹ Lakh)']:.2f} Lakh")
+    col1.metric("Price", format_price(car_details['Price (₹ Lakh)']))
     col2.metric("Engine", f"{car_details['Engine_L']*1000:.0f} cc")
     col3.metric("Power", f"{car_details['Horsepower']:.1f} HP")
     col4.metric("Torque", f"{car_details['Torque_Nm']:.0f} Nm")
@@ -49,7 +57,7 @@ if selected_car != "-- Select a Car --":
     )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
     recommendations = recommend(selected_car, top_n=4)
 
     if recommendations.empty:
@@ -61,10 +69,9 @@ if selected_car != "-- Select a Car --":
                 st.markdown(
                     f"""
                     ### {row['CarName']}
-                    • **Price:** ₹ {row['Price (₹ Lakh)']:.2f} Lakh  
+                    • **Price:** {format_price(row['Price (₹ Lakh)'])}  
                     • **Engine:** {row['Engine_L']*1000:.0f} cc  
                     • **Power:** {row['Horsepower']:.1f} HP  
                     • **Torque:** {row['Torque_Nm']:.0f} Nm  
                     """
                 )
-
